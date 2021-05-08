@@ -3,6 +3,7 @@ package main
 // Importing packages
 import (
 	"fmt"
+	"os"
 )
 
 // Main function
@@ -16,6 +17,7 @@ func main() {
 	fmt.Println("P3", img_width, img_height, "255")
 
 	for j := img_height - 1; j >= 0; j-- {
+		fmt.Fprintf(os.Stderr, "\rScanline remaining: %d", j)
 		for i := 0; i < img_width; i++ {
 			r := float64(i) / float64(img_width-1)
 			g := float64(j) / float64(img_height-1)
@@ -28,4 +30,5 @@ func main() {
 			fmt.Println(ir, ig, ib)
 		}
 	}
+	println("\nDone\n")
 }
