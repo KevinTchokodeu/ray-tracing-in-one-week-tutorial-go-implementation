@@ -4,6 +4,7 @@ package main
 import (
 	"fmt"
 	"os"
+	"ray-tracing-in-one-week-tutorial-go-implementation/pkg/img"
 )
 
 // Main function
@@ -19,14 +20,11 @@ func main() {
 	for j := img_height - 1; j >= 0; j-- {
 		fmt.Fprintf(os.Stderr, "\rScanline remaining: %d", j)
 		for i := 0; i < img_width; i++ {
-			r := float64(i) / float64(img_width-1)
-			g := float64(j) / float64(img_height-1)
-			b := 0.25
+			col := img.NewColor(float64(i)/float64(img_width), float64(j)/float64(img_height), 0.2)
 
-			ir := int(255.99 * r)
-			ig := int(255.99 * g)
-			ib := int(255.99 * b)
-
+			ir := int(255.99 * col.R())
+			ig := int(255.99 * col.G())
+			ib := int(255.99 * col.B())
 			fmt.Println(ir, ig, ib)
 		}
 	}

@@ -3,4 +3,5 @@ git-%:
 	git commit -m"$(@:git-%=%)"
 	git push 
 	clear
-	git status			
+	git status
+	clear			
