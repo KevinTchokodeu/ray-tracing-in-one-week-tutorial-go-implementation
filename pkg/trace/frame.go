@@ -49,6 +49,7 @@ func (f Frame) WritePPM(w io.Writer, h Hittable, samples int) error {
 				c = c.Plus(color(r, h))
 			}
 			c = c.Scaled(1 / float64(samples)).Gamma(2)
+
 			ir := int(255.99 * c.R())
 			ig := int(255.99 * c.G())
 			ib := int(255.99 * c.B())
