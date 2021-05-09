@@ -13,10 +13,7 @@ type Vec3 struct {
 
 // constructor
 func NewVec(el0, el1, el2 float64) (v Vec3) {
-	v.El[0] = el0
-	v.El[1] = el1
-	v.El[2] = el2
-	return
+	return Vec3{El: [3]float64{el0, el1, el2}}
 }
 
 // Return first element
@@ -96,7 +93,7 @@ func (v Vec3) Scaled(n float64) Vec3 {
 }
 
 // Dot product of two vectors
-func (v Vec3) Doc(v1 Vec3) float64 {
+func (v Vec3) Dot(v1 Vec3) float64 {
 	return v.El[0]*v1.El[0] + v.El[1]*v1.El[1] + v.El[2]*v1.El[2]
 }
 

@@ -29,3 +29,13 @@ func (c Color) G() float64 {
 func (c Color) B() float64 {
 	return c.El[2]
 }
+
+// Returns sum of two colors
+func (c Color) Plus(c2 Color) Color {
+	return Color{Vec3: c.Vec3.Plus(c2.Vec3)}
+}
+
+// Returns the color scaled
+func (c Color) Scaled(n float64) Color {
+	return Color{Vec3: c.Vec3.Scaled(n)}
+}
