@@ -1,8 +1,7 @@
-git-% tag-%: 
+git-%: 
 	git add . 
 	git commit -m"$(@:git-%=%)"
-	git tag "$(@:tag-%=%)"
-
+	git push 
 	clear
 	git status
 	clear			
