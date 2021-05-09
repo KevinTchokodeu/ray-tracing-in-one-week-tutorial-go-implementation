@@ -9,34 +9,38 @@ import (
 type Sphere struct {
 	Center geom.Vec3
 	Rad    float64
+	Mat    Material
 }
 
 // Creates a new Sphere with the given center and radius.
-func NewSphere(center geom.Vec3, radius float64) Sphere {
-	return Sphere{Center: center, Rad: radius}
+func NewSphere(center geom.Vec3, radius float64, m Material) Sphere {
+	return Sphere{Center: center, Rad: radius, Mat: m}
 }
 
 // Finds the first intersection (if any) between Ray r and the Sphere's surface.
 // If no intersection is found, t = 0.
-func (s Sphere) Hit(r geom.Ray, tMin, tMax float64) (t float64, p geom.Vec3, n geom.Unit) {
+func (s Sphere) Hit(r geom.Ray, tMin, tMax float64) (t float64, surf Surfacer) {
 	oc := r.Or.Minus(s.Center)
-	a := r.Dir.Dot(r.Dir.Vec3)
+	a := r.Dir.Dot(r.Dir)
 	b := oc.Dot(r.Dir.Vec3)
 	c := oc.Dot(oc) - s.Rad*s.Rad
 	disc := b*b - a*c
 	if disc <= 0 {
-		return 0, p, n
+		return 0, s
 	}
 	sqrt := math.Sqrt(b*b - a*c)
 	t = (-b - sqrt) / a
 	if t > tMin && t < tMax {
-		p = r.At(t)
-		return t, p, p.Minus(s.Center).ToUnit()
+		return t, s
 	}
 	t = (-b + sqrt) / a
 	if t > tMin && t < tMax {
-		p = r.At(t)
-		return t, p, p.Minus(s.Center).ToUnit()
+		return t, s
 	}
-	return 0, p, n
+	return 0, s
+}
+
+// Surface returns the normal and material at point p on the Sphere
+func (s Sphere) Surface(p geom.Vec3) (n geom.Unit, m Material) {
+	return p.Minus(s.Center).ToUnit(), s.Mat
 }
