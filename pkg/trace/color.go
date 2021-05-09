@@ -1,4 +1,4 @@
-package img
+package trace
 
 import "ray-tracing-in-one-week-tutorial-go-implementation/pkg/geom"
 
