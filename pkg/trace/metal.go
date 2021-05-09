@@ -1,6 +1,8 @@
 package trace
 
-import "ray-tracing-in-one-week-tutorial-go-implementation/pkg/geom"
+import (
+	"ray-tracing-in-one-week-tutorial-go-implementation/pkg/geom"
+)
 
 // Metal describes a reflective material
 type Metal struct {
@@ -14,9 +16,13 @@ func NewMetal(albedo Color, roughness float64) Metal {
 }
 
 // Scatter reflects incoming light rays about the normal.
-func (m Metal) Scatter(in geom.Ray, p geom.Vec3, n geom.Unit) (out geom.Ray, attenuation Color, ok bool) {
-	r := in.Dir.Reflect(n)
-	dir := r.Plus(geom.RandVecInSphere().Scaled(m.Rough)).ToUnit()
-	out = geom.NewRay(p, dir)
-	return out, m.Albedo, out.Dir.Dot(n) > 0
+func (m Metal) Scatter(in geom.Unit, n geom.Unit) (out geom.Unit, attenuation Color, ok bool) {
+	r := reflect(in, n)
+	out = r.Plus(geom.RandVecInSphere().Scaled(m.Rough)).ToUnit()
+	return out, m.Albedo, out.Dot(n) > 0
+}
+
+// Reflect reflects this unit vector about a normal vector n.
+func reflect(u, n geom.Unit) geom.Unit {
+	return geom.Unit{Vec3: u.Minus(n.Scaled(2 * u.Dot(n)))}
 }

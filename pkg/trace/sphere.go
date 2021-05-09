@@ -42,5 +42,5 @@ func (s Sphere) Hit(r geom.Ray, tMin, tMax float64) (t float64, surf Surfacer) {
 
 // Surface returns the normal and material at point p on the Sphere
 func (s Sphere) Surface(p geom.Vec3) (n geom.Unit, m Material) {
-	return p.Minus(s.Center).ToUnit(), s.Mat
+	return p.Minus(s.Center).Scaled(s.Rad).ToUnit(), s.Mat
 }
