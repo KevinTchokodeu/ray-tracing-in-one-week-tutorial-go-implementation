@@ -4,12 +4,12 @@ import (
 	"fmt"
 	"io"
 	"math"
-	"os"
+	"math/rand"
 	"ray-tracing-in-one-week-tutorial-go-implementation/pkg/geom"
 )
 
 // Surface: can be hit by a Ray
-type Surface interface {
+type Hittable interface {
 	Hit(r geom.Ray, tMin, tMax float64) (t float64, p geom.Vec3, n geom.Unit)
 }
 
@@ -24,7 +24,7 @@ func NewFrame(width, height int) Frame {
 }
 
 // WritePPM traces each pixel in the frame and writes the results to w in PPM format
-func (f Frame) WritePPM(w io.Writer, s Surface) error {
+func (f Frame) WritePPM(w io.Writer, h Hittable, samples int) error {
 	if _, err := fmt.Fprintln(w, "P3"); err != nil {
 		return err
 	}
@@ -35,24 +35,21 @@ func (f Frame) WritePPM(w io.Writer, s Surface) error {
 		return err
 	}
 
-	lowerLeft := geom.NewVec(-2, -1, -1)
-	horizontal := geom.NewVec(4, 0, 0)
-	vertical := geom.NewVec(0, 2, 0)
-	origin := geom.NewVec(0, 0, 0)
+	cam := Camera{}
 
-	for j := f.H - 1; j >= 0; j-- {
-		fmt.Fprintf(os.Stderr, "\rScanline remaining: %d", j)
-		for i := 0; i < f.W; i++ {
-			u := float64(i) / float64(f.W)
-			v := float64(j) / float64(f.H)
-			r := geom.NewRay(
-				origin,
-				lowerLeft.Plus((horizontal.Scaled(u)).Plus(vertical.Scaled(v))).ToUnit(),
-			)
-			col := color(r, s)
-			ir := int(255.99 * col.R())
-			ig := int(255.99 * col.G())
-			ib := int(255.99 * col.B())
+	for y := f.H - 1; y >= 0; y-- {
+		for x := 0; x < f.W; x++ {
+			c := NewColor(0, 0, 0)
+			for s := 0; s < samples; s++ {
+				u := (float64(x) + rand.Float64()) / float64(f.W)
+				v := (float64(y) + rand.Float64()) / float64(f.H)
+				r := cam.Ray(u, v)
+				c = c.Plus(color(r, h))
+			}
+			c = c.Scaled(1 / float64(samples))
+			ir := int(255.99 * c.R())
+			ig := int(255.99 * c.G())
+			ib := int(255.99 * c.B())
 			if _, err := fmt.Fprintln(w, ir, ig, ib); err != nil {
 				return err
 			}
@@ -62,8 +59,8 @@ func (f Frame) WritePPM(w io.Writer, s Surface) error {
 	return nil
 }
 
-func color(r geom.Ray, s Surface) Color {
-	if t, _, n := s.Hit(r, 0, math.MaxFloat64); t > 0 {
+func color(r geom.Ray, h Hittable) Color {
+	if t, _, n := h.Hit(r, 0, math.MaxFloat64); t > 0 {
 		return NewColor(n.X()+1, n.Y()+1, n.Z()+1).Scaled(0.5)
 	}
 	t := 0.5 * (r.Dir.Y() + 1.0)

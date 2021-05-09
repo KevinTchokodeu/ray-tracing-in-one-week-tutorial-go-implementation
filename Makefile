@@ -8,6 +8,7 @@ git-%:
 
 tag-%:	
 	git tag "$(@:tag-%=%)"	
+	git push
 	clear
 
 image-%:
