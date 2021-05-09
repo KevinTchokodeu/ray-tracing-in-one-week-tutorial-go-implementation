@@ -1,6 +1,9 @@
 package trace
 
-import "ray-tracing-in-one-week-tutorial-go-implementation/pkg/geom"
+import (
+	"math"
+	"ray-tracing-in-one-week-tutorial-go-implementation/pkg/geom"
+)
 
 // Represents an RGB color value
 type Color struct {
@@ -38,4 +41,14 @@ func (c Color) Plus(c2 Color) Color {
 // Returns the color scaled
 func (c Color) Scaled(n float64) Color {
 	return Color{Vec3: c.Vec3.Scaled(n)}
+}
+
+// Gamma raises each of R, G, and B to 1/n
+func (c Color) Gamma(n float64) Color {
+	ni := 1 / n
+	return NewColor(
+		math.Pow(c.R(), ni),
+		math.Pow(c.G(), ni),
+		math.Pow(c.B(), ni),
+	)
 }
