@@ -28,6 +28,18 @@ func RandVecInSphere() Vec3 {
 	}
 }
 
+// RandVecInDisk creates a random Vec within a unit disk
+// TODO: more rejection methods :/
+func RandVecInDisk() Vec3 {
+	xy := NewVec(1, 1, 0)
+	for {
+		v := NewVec(rand.Float64(), rand.Float64(), 0).Scaled(2).Minus(xy)
+		if v.Dot(v) < 1 {
+			return v
+		}
+	}
+}
+
 // Return first element
 func (v Vec3) X() float64 {
 	return v.El[0]
