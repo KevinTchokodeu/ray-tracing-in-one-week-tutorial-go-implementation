@@ -14,12 +14,12 @@ func NewList(s ...Hittable) List {
 
 // Finds the first intersection (if any) between Ray r and any of the Surfaces in the List.
 // If no intersection is found, t = 0.
-func (l List) Hit(r geom.Ray, tMin, tMax float64) (t float64, s Surfacer) {
+func (l List) Hit(r geom.Ray, tMin, tMax float64) (t float64, bo Bouncer) {
 	closest := tMax
 	for _, h := range l.HH {
-		if ht, hs := h.Hit(r, tMin, closest); ht > 0 {
+		if ht, hbo := h.Hit(r, tMin, closest); ht > 0 {
 			closest, t = ht, ht
-			s = hs
+			bo = hbo
 		}
 	}
 	return

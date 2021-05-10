@@ -58,8 +58,8 @@ func (v Vec3) Len() float64 {
 	return math.Sqrt(v.LenSq())
 }
 
-// ToUnit converts vector to a unit vector
-func (v Vec3) ToUnit() (u Unit) {
+// Unit converts vector to a unit vector
+func (v Vec3) Unit() (u Unit) {
 	k := 1.0 / v.Len()
 	u.El[0] = v.El[0] * k
 	u.El[1] = v.El[1] * k

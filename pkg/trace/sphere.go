@@ -19,7 +19,7 @@ func NewSphere(center geom.Vec3, radius float64, m Material) Sphere {
 
 // Finds the first intersection (if any) between Ray r and the Sphere's surface.
 // If no intersection is found, t = 0.
-func (s Sphere) Hit(r geom.Ray, tMin, tMax float64) (t float64, surf Surfacer) {
+func (s Sphere) Hit(r geom.Ray, tMin, tMax float64) (t float64, bo Bouncer) {
 	oc := r.Or.Minus(s.Center)
 	a := r.Dir.Dot(r.Dir)
 	b := oc.Dot(r.Dir.Vec3)
@@ -40,7 +40,7 @@ func (s Sphere) Hit(r geom.Ray, tMin, tMax float64) (t float64, surf Surfacer) {
 	return 0, s
 }
 
-// Surface returns the normal and material at point p on the Sphere
-func (s Sphere) Surface(p geom.Vec3) (n geom.Unit, m Material) {
-	return p.Minus(s.Center).Scaled(s.Rad).ToUnit(), s.Mat
+// Bounceturns the normal and material at point p on the Sphere
+func (s Sphere) Bounce(p geom.Vec3) (n geom.Unit, m Material) {
+	return p.Minus(s.Center).Scaled(s.Rad).Unit(), s.Mat
 }

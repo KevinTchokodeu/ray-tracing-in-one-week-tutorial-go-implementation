@@ -12,12 +12,12 @@ const bias = 0.001
 
 // Surface: can be hit by a Ray
 type Hittable interface {
-	Hit(r geom.Ray, tMin, tMax float64) (t float64, s Surfacer)
+	Hit(r geom.Ray, tMin, tMax float64) (t float64, b Bouncer)
 }
 
-// Surfacer represents something that can return surface normals and materials
-type Surfacer interface {
-	Surface(p geom.Vec3) (n geom.Unit, m Material)
+// Bouncer represents something that can return surface normals and materials
+type Bouncer interface {
+	Bounce(p geom.Vec3) (n geom.Unit, m Material)
 }
 
 // Material represents a material that scatters light.
@@ -26,35 +26,34 @@ type Material interface {
 }
 
 // Frame: gathers the results of ray traces on a W x H grid.
-type Frame struct {
+type Window struct {
 	W, H int
 }
 
 // NewFrame creates a new frame with specific dimensions
-func NewFrame(width, height int) Frame {
-	return Frame{W: width, H: height}
+func NewWindow(width, height int) Window {
+	return Window{W: width, H: height}
 }
 
 // WritePPM traces each pixel in the frame and writes the results to w in PPM format
-func (f Frame) WritePPM(w io.Writer, h Hittable, samples int) error {
+func (wi Window) WritePPM(w io.Writer, h Hittable, samples int) error {
 	if _, err := fmt.Fprintln(w, "P3"); err != nil {
 		return err
 	}
-	if _, err := fmt.Fprintln(w, f.W, f.H); err != nil {
+	if _, err := fmt.Fprintln(w, wi.W, wi.H); err != nil {
 		return err
 	}
 	if _, err := fmt.Fprintln(w, "255"); err != nil {
 		return err
 	}
 
-	cam := Camera{}
-
-	for y := f.H - 1; y >= 0; y-- {
-		for x := 0; x < f.W; x++ {
+	cam := NewCamera(geom.NewVec(-2, 2, 1), geom.NewVec(0, 0, -1), geom.NewUnit(0, 1, 0), 20, float64(wi.W)/float64(wi.H))
+	for y := wi.H - 1; y >= 0; y-- {
+		for x := 0; x < wi.W; x++ {
 			c := NewColor(0, 0, 0)
 			for s := 0; s < samples; s++ {
-				u := (float64(x) + rand.Float64()) / float64(f.W)
-				v := (float64(y) + rand.Float64()) / float64(f.H)
+				u := (float64(x) + rand.Float64()) / float64(wi.W)
+				v := (float64(y) + rand.Float64()) / float64(wi.H)
 				r := cam.Ray(u, v)
 				c = c.Plus(color(r, h, 0))
 			}
@@ -76,9 +75,9 @@ func color(r geom.Ray, h Hittable, depth int) Color {
 	if depth > 50 {
 		return NewColor(0, 0, 0)
 	}
-	if t, s := h.Hit(r, bias, math.MaxFloat64); t > 0 {
+	if t, bo := h.Hit(r, bias, math.MaxFloat64); t > 0 {
 		p := r.At(t)
-		n, m := s.Surface(p)
+		n, m := bo.Bounce(p)
 		scattered, attenuation, ok := m.Scatter(r.Dir, n)
 		if !ok {
 			return NewColor(0, 0, 0)
