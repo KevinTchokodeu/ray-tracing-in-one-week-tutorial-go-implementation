@@ -1,0 +1,4 @@
+pkg/trace/camera.go:9:2: var lowerLeft is unused (U1000)
+pkg/trace/camera.go:10:2: var horizontal is unused (U1000)
+pkg/trace/camera.go:11:2: var vertical is unused (U1000)
+pkg/trace/camera.go:12:2: var origin is unused (U1000)

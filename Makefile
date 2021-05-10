@@ -15,3 +15,8 @@ image-%:
 	go run main.go > images/$(@:image-%=%).ppm
 	open images/$(@:image-%=%).ppm	
 	clear
+
+analysis:
+	go vet . > vet.log
+	staticcheck ./... > staticcheck.log
+	
